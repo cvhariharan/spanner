@@ -1,17 +1,19 @@
 {
-    "firstName": "Bruce",
-    "lastName": "Wayne",
-    "username": "darkknight",
-    "age": 35,
-    "designation": "Vigilante",
-    "isAwesome": true,
-    "address": {
-        "street": "1007 Mountain Drive",
-        "city": "Gotham",
-        "location": {
-            "lat": "23.67N",
-            "long": "34.567E"
-        },
-        "isResidence": true
+   "user": {
+        "firstName": "Bruce",
+        "lastName": "Wayne",
+        "username": "darkknight",
+        "age": 35,
+        "designation": "Vigilante",
+        "isAwesome": true,
+        "address": {
+            "street": "1007 Mountain Drive",
+            "city": "Gotham",
+            "location": {
+                "lat": "23.67N",
+                "long": "34.567E"
+            },
+            "isResidence": true
+        }
     }
 }

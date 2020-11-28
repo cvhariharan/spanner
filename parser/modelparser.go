@@ -2,6 +2,7 @@ package parser
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -25,12 +26,19 @@ func ParseModelFromJSON(filename string) (map[string]map[string]string, error) {
 		return nil, err
 	}
 
-	modelMap := ParseModel(m)
+	keys := reflect.ValueOf(m).MapKeys()
+	if len(keys) != 1 {
+		return nil, errors.New("Expected only one model definition.")
+	}
+
+	modelName := keys[0].String()
+
+	modelMap := ParseModel(m, modelName)
 	return modelMap, nil
 }
 
-func ParseModel(m map[string]interface{}) map[string]map[string]string {
-	return convertToStruct(m, make(map[string]map[string]string), "User")
+func ParseModel(m map[string]interface{}, modelName string) map[string]map[string]string {
+	return convertToStruct(m, make(map[string]map[string]string), modelName)
 }
 
 func convertToStruct(m map[string]interface{}, modelMap map[string]map[string]string, structName string) map[string]map[string]string {
@@ -40,7 +48,7 @@ func convertToStruct(m map[string]interface{}, modelMap map[string]map[string]st
 	for k, v := range m {
 		typeName := reflect.TypeOf(v).String()
 		if reflect.TypeOf(v).String() == "map[string]interface {}" {
-			typeName = strings.ToLower(k)
+			typeName = strings.ToLower(k) + "0"
 			mapName = append(mapName, typeName)
 			mapValue = append(mapValue, v)
 		}

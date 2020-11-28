@@ -6,7 +6,7 @@ package {{ .PackageName }}
 {{- range $modelName, $modelVal := .ModelMap}}
     type {{ $modelName }} struct {
     {{- range $field, $type := $modelVal}}
-    {{ Title $field}} {{$type}}
+    {{ Title $field}} {{$type}} `json:"{{ TitleLower $field }},omitempty"`
     {{- end}}
 }
 {{- end}}
