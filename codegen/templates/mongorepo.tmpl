@@ -1,0 +1,84 @@
+package repo
+
+// This code is generated
+// DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING
+
+import (
+   "context"
+   "fmt"
+   "log"
+   
+   "go.mongodb.org/mongo-driver/bson"
+   "go.mongodb.org/mongo-driver/bson/primitive"
+   "go.mongodb.org/mongo-driver/mongo"
+   "go.mongodb.org/mongo-driver/mongo/options"
+)
+
+type MongoRepo struct {
+    Client *mongo.Client
+    Collection string
+    Database string
+}
+
+func NewMongoRepo(uri, database, collection string) (Repo, error){
+    client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+    if err != nil {
+        return nil, err
+    }
+
+    err = client.Connect(context.Background())
+    if err != nil {
+        return nil, err
+    }
+
+    return &MongoRepo{
+        client,
+        collection,
+        database,
+    }, nil
+}
+
+func (c *MongoRepo) Insert(m interface{}) error {
+    collection := c.Client.Database(c.Database).Collection(c.Collection)
+    res, err := collection.InsertOne(context.TODO(), m)
+    if err != nil {
+        log.Println(err)
+        return err
+    }
+    log.Println(res)
+    return nil
+}
+
+func (c *MongoRepo) Get(id string) (interface{}, error) {
+    collection := c.Client.Database(c.Database).Collection(c.Collection)
+    var m interface{}
+    
+    objectId, err := primitive.ObjectIDFromHex(id)
+    if err != nil {
+        log.Println(err)
+        return nil, err
+    }
+    collection.FindOne(context.TODO(), bson.M{"_id": objectId}).Decode(&m)
+    return m, nil
+}
+
+func (c *MongoRepo) Update(m interface{}) error {
+    fmt.Println("Not yet implemented")
+    return nil
+}
+
+func (c *MongoRepo) Delete(id string) error {
+    collection := c.Client.Database(c.Database).Collection(c.Collection)
+    objectId, err := primitive.ObjectIDFromHex(id)
+    if err != nil {
+        log.Println(err)
+        return err
+    }
+    res, err := collection.DeleteOne(context.TODO(), bson.M{"_id": objectId})
+    if err != nil {
+        log.Println(err)
+        return err
+    }
+    log.Println(res)
+    return nil
+}

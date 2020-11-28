@@ -11,7 +11,13 @@ func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Expected models filename")
 	}
-	err := codegen.GenerateModel(os.Args[1])
+	templatePath := os.Getenv("TEMPLATE")
+	err := codegen.GenerateModel(os.Args[1], templatePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = codegen.GenerateRepo(os.Args[1], templatePath)
 	if err != nil {
 		log.Fatal(err)
 	}

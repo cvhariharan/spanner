@@ -48,7 +48,7 @@ func convertToStruct(m map[string]interface{}, modelMap map[string]map[string]st
 	for k, v := range m {
 		typeName := reflect.TypeOf(v).String()
 		if reflect.TypeOf(v).String() == "map[string]interface {}" {
-			typeName = strings.ToLower(k) + "0"
+			typeName = strings.Title(k) + "0"
 			mapName = append(mapName, typeName)
 			mapValue = append(mapValue, v)
 		}

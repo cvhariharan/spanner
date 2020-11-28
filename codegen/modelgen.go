@@ -13,7 +13,7 @@ import (
 	"github.com/cvhariharan/spanner/parser"
 )
 
-func GenerateModel(filename string) error {
+func GenerateModel(filename, templatePath string) error {
 	f, err := os.Open(filename)
 	if err != nil {
 		return err
@@ -63,7 +63,7 @@ func GenerateModel(filename string) error {
 				rest := bts[1:]
 				return string(bytes.Join([][]byte{lc, rest}, nil))
 			},
-		}).ParseFiles("codegen/templates/model.tmpl"))
+		}).ParseFiles(templatePath + "/model.tmpl"))
 
 	if _, err := os.Stat("model"); os.IsNotExist(err) {
 		os.Mkdir("model", os.ModePerm)

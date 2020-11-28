@@ -1,0 +1,12 @@
+package repo
+
+// This code is generated
+// DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING
+
+type Repo interface {
+    Insert(m interface{}) error
+    Get(id string) (interface{}, error)
+    Update(m interface{}) error
+    Delete(id string) error
+}
+

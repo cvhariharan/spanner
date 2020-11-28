@@ -1,12 +1,17 @@
-package {{ .PackageName }}
+package model
 
 // This code is generated
 // DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING
 
+import (
+    "go.mongodb.org/mongo-driver/bson/primitive"
+)
+
 {{- range $modelName, $modelVal := .ModelMap}}
-    type {{ $modelName }} struct {
+type {{ Title $modelName }} struct {
+    ID  primitive.ObjectID `bson:"_id,omitempty"`
     {{- range $field, $type := $modelVal}}
-    {{ Title $field}} {{$type}} `json:"{{ TitleLower $field }},omitempty"`
+    {{ Title $field}} {{$type}} `bson:"{{ TitleLower $field }}", json:"{{ TitleLower $field }}"`
     {{- end}}
 }
 {{- end}}
