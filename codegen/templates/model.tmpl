@@ -1,0 +1,12 @@
+package {{ .PackageName }}
+
+// This code is generated
+// DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING
+
+{{- range $modelName, $modelVal := .ModelMap}}
+    type {{ $modelName }} struct {
+    {{- range $field, $type := $modelVal}}
+    {{ Title $field}} {{$type}}
+    {{- end}}
+}
+{{- end}}
