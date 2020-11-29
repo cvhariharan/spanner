@@ -9,9 +9,11 @@ import (
 	"reflect"
 	"strings"
 	"text/template"
+
+	"github.com/cvhariharan/spanner/config"
 )
 
-func GenerateRepo(filename, templatePath string) error {
+func GenerateRepo(filename, templatePath string, cfg config.Config) error {
 	f, err := os.Open(filename)
 	if err != nil {
 		return err
@@ -42,9 +44,11 @@ func GenerateRepo(filename, templatePath string) error {
 	// modelMap := parser.ParseModel(modelDef, modelName)
 
 	genData := struct {
-		ModelName string
+		ModelName  string
+		ModuleName string
 	}{
 		strings.Title(modelName),
+		cfg.ModulePath,
 	}
 
 	repo := template.Must(template.New("repo.tmpl").Funcs(

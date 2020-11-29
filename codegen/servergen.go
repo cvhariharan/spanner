@@ -9,9 +9,11 @@ import (
 	"reflect"
 	"strings"
 	"text/template"
+
+	"github.com/cvhariharan/spanner/config"
 )
 
-func GenerateServer(filename, templatePath string) error {
+func GenerateServer(filename, templatePath string, cfg config.Config) error {
 	f, err := os.Open(filename)
 	if err != nil {
 		return err
@@ -38,9 +40,11 @@ func GenerateServer(filename, templatePath string) error {
 	genData := struct {
 		PackageName string
 		ModelName   string
+		ModuleName  string
 	}{
 		"server",
 		modelName,
+		cfg.ModulePath,
 	}
 
 	t := template.Must(template.New("server.tmpl").Funcs(
