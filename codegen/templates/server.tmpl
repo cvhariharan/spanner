@@ -8,6 +8,9 @@ import (
 	"github.com/labstack/echo/v4/middleware"
     "github.com/cvhariharan/test-crud/model"
     "github.com/cvhariharan/test-crud/repo"
+
+    "github.com/swaggo/echo-swagger"
+	_ "github.com/swaggo/echo-swagger/example/docs"
 )
 
 type handler struct {
@@ -20,6 +23,16 @@ func NewHandler(repository repo.{{ Title .ModelName }}Repo) *handler {
     }
 }
 
+// Create {{Title .ModelName}}
+// @Summary Create {{Title .ModelName}}
+// @Description Create {{Title .ModelName}} by POST
+// @ID create-{{ .ModelName }}
+// @Accept  json
+// @Produce  json
+// @Param   {{.ModelName}}  body  model.{{Title .ModelName }} true  "{{Title .ModelName}}"
+// @Success 201 {string} string	"Created"
+// @Failure 500 {object} string "Some error occured"
+// @Router /{{.ModelName}}s [post]
 func (h *handler) create{{ Title .ModelName }}(c echo.Context) error {
     var m model.{{ Title .ModelName }}
     if err := c.Bind(&m); err != nil {
@@ -38,6 +51,17 @@ func (h *handler) create{{ Title .ModelName }}(c echo.Context) error {
     return c.JSON(http.StatusCreated, m)
 }
 
+// Get {{Title .ModelName}}
+// @Summary Get {{Title .ModelName}}
+// @Description Get {{Title .ModelName}} by GET
+// @ID get-{{ .ModelName }}
+// @Accept  json
+// @Produce  json
+// @Param   id  path  string true  "{{Title .ModelName}} ID"
+// @Success 201 {string} string	"Ok"
+// @Failure 400 {object} string "Bad Request, param empty"
+// @Failure 500 {object} string "Some error occured"
+// @Router /{{.ModelName}}s/{id} [get]
 func (h *handler) get{{ Title .ModelName }}(c echo.Context) error {
     id := c.Param("id")
     if id == "" {
@@ -53,6 +77,16 @@ func (h *handler) get{{ Title .ModelName }}(c echo.Context) error {
     return c.JSON(http.StatusOK, m)
 }
 
+// Update {{Title .ModelName}}
+// @Summary Update {{Title .ModelName}}
+// @Description Update {{Title .ModelName}} by PUT
+// @ID update-{{ .ModelName }}
+// @Accept  json
+// @Produce  json
+// @Param   {{.ModelName}}  body  model.{{Title .ModelName }} true  "{{Title .ModelName}}"
+// @Success 200 {string} string	"Ok"
+// @Failure 500 {object} string "Some error occured"
+// @Router /{{.ModelName}}s [put]
 func (h *handler) update{{ Title .ModelName }}(c echo.Context) error {
     var m model.{{ Title .ModelName }}
     if err := c.Bind(&m); err != nil {
@@ -76,6 +110,17 @@ func (h *handler) update{{ Title .ModelName }}(c echo.Context) error {
     return c.JSON(http.StatusOK, m)
 }
 
+// Delete {{Title .ModelName}}
+// @Summary Delete {{Title .ModelName}}
+// @Description Delete {{Title .ModelName}} by DELETE
+// @ID delete-{{ .ModelName }}
+// @Accept  json
+// @Produce  json
+// @Param   id  path  string true  "{{Title .ModelName}} ID"
+// @Success 201 {string} string	"Ok"
+// @Failure 400 {object} string "Bad Request, param empty"
+// @Failure 500 {object} string "Some error occured"
+// @Router /{{.ModelName}}s/{id} [delete]
 func (h *handler) delete{{ Title .ModelName }}(c echo.Context) error {
     id := c.Param("id")
     if id == "" {
@@ -96,12 +141,24 @@ func (h *handler) delete{{ Title .ModelName }}(c echo.Context) error {
 //    
 // }
 
+
+// @title {{Title .ModelName}} CRUD API
+// @version 1.0
+// @description This is a spanner generated CRUD API
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:5000
+
 func main() {
 	e := echo.New()
 
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+
+    e.GET("/swagger/*", echoSwagger.WrapHandler)
 
     uri := "mongodb://mongoadmin:secret@localhost:27017"
     

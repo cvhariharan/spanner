@@ -61,7 +61,7 @@ func GenerateServer(filename, templatePath string) error {
 	// 	os.Mkdir("server", os.ModePerm)
 	// }
 
-	out, err := os.Create("server.gen.go")
+	out, err := os.Create("main.go")
 	if err != nil {
 		return err
 	}
