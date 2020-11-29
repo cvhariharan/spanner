@@ -1,12 +1,16 @@
 package repo
 
+import (
+    "github.com/cvhariharan/test-crud/model"
+)
+
 // This code is generated
 // DO NOT EDIT UNLESS YOU KNOW WHAT YOU ARE DOING
 
-type Repo interface {
-    Insert(m interface{}) error
-    Get(id string) (interface{}, error)
-    Update(m interface{}) error
+type {{.ModelName}}Repo interface {
+    Insert(m model.{{ .ModelName }}) (string, error)
+    Get(id string) (model.{{ .ModelName }}, error)
+    Update(m model.{{ .ModelName }}) error
     Delete(id string) error
 }
 

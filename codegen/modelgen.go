@@ -44,10 +44,12 @@ func GenerateModel(filename, templatePath string) error {
 	modelMap := parser.ParseModel(modelDef, modelName)
 
 	genData := struct {
-		PackageName string
-		ModelMap    map[string]map[string]string
+		PackageName   string
+		MainModelName string
+		ModelMap      map[string]map[string]string
 	}{
 		"model",
+		modelName,
 		modelMap,
 	}
 

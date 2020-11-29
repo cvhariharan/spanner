@@ -2,34 +2,38 @@ package codegen
 
 import (
 	"bytes"
+	"encoding/json"
+	"errors"
+	"io/ioutil"
 	"os"
+	"reflect"
 	"strings"
 	"text/template"
 )
 
 func GenerateRepo(filename, templatePath string) error {
-	// f, err := os.Open(filename)
-	// if err != nil {
-	// 	return err
-	// }
+	f, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
 
-	// data, err := ioutil.ReadAll(f)
-	// if err != nil {
-	// 	return err
-	// }
+	data, err := ioutil.ReadAll(f)
+	if err != nil {
+		return err
+	}
 
-	// var model map[string]interface{}
-	// err = json.Unmarshal(data, &model)
-	// if err != nil {
-	// 	return err
-	// }
+	var model map[string]interface{}
+	err = json.Unmarshal(data, &model)
+	if err != nil {
+		return err
+	}
 
-	// keys := reflect.ValueOf(model).MapKeys()
-	// if len(keys) != 1 {
-	// 	return errors.New("Expected only one model definition")
-	// }
+	keys := reflect.ValueOf(model).MapKeys()
+	if len(keys) != 1 {
+		return errors.New("Expected only one model definition")
+	}
 
-	// modelName := keys[0].String()
+	modelName := keys[0].String()
 
 	// modelDef, ok := model[modelName].(map[string]interface{})
 	// if !ok {
@@ -37,13 +41,11 @@ func GenerateRepo(filename, templatePath string) error {
 	// }
 	// modelMap := parser.ParseModel(modelDef, modelName)
 
-	// genData := struct {
-	// 	PackageName string
-	// 	ModelMap    map[string]map[string]string
-	// }{
-	// 	"model",
-	// 	modelMap,
-	// }
+	genData := struct {
+		ModelName string
+	}{
+		strings.Title(modelName),
+	}
 
 	repo := template.Must(template.New("repo.tmpl").Funcs(
 		template.FuncMap{
@@ -87,12 +89,12 @@ func GenerateRepo(filename, templatePath string) error {
 		return err
 	}
 
-	err = repo.Execute(outrepo, struct{}{})
+	err = repo.Execute(outrepo, genData)
 	if err != nil {
 		return err
 	}
 
-	err = mongo.Execute(outmongo, struct{}{})
+	err = mongo.Execute(outmongo, genData)
 	if err != nil {
 		return err
 	}

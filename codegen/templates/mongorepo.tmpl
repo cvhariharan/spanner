@@ -5,13 +5,13 @@ package repo
 
 import (
    "context"
-   "fmt"
    "log"
    
    "go.mongodb.org/mongo-driver/bson"
    "go.mongodb.org/mongo-driver/bson/primitive"
    "go.mongodb.org/mongo-driver/mongo"
    "go.mongodb.org/mongo-driver/mongo/options"
+   "github.com/cvhariharan/test-crud/model"
 )
 
 type MongoRepo struct {
@@ -20,7 +20,7 @@ type MongoRepo struct {
     Database string
 }
 
-func NewMongoRepo(uri, database, collection string) (Repo, error){
+func NewMongoRepo(uri, database, collection string) ({{.ModelName}}Repo, error){
     client, err := mongo.NewClient(options.Client().ApplyURI(uri))
     if err != nil {
         return nil, err
@@ -38,33 +38,39 @@ func NewMongoRepo(uri, database, collection string) (Repo, error){
     }, nil
 }
 
-func (c *MongoRepo) Insert(m interface{}) error {
+func (c *MongoRepo) Insert(m model.{{ .ModelName }}) (string, error) {
     collection := c.Client.Database(c.Database).Collection(c.Collection)
     res, err := collection.InsertOne(context.TODO(), m)
     if err != nil {
         log.Println(err)
-        return err
+        return "", err
     }
     log.Println(res)
-    return nil
+    return res.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func (c *MongoRepo) Get(id string) (interface{}, error) {
+func (c *MongoRepo) Get(id string) (model.{{ .ModelName }}, error) {
     collection := c.Client.Database(c.Database).Collection(c.Collection)
-    var m interface{}
+    var m model.{{ .ModelName }}
     
     objectId, err := primitive.ObjectIDFromHex(id)
     if err != nil {
         log.Println(err)
-        return nil, err
+        return model.{{ .ModelName }}{}, err
     }
     collection.FindOne(context.TODO(), bson.M{"_id": objectId}).Decode(&m)
     return m, nil
 }
 
-func (c *MongoRepo) Update(m interface{}) error {
-    fmt.Println("Not yet implemented")
-    return nil
+func (c *MongoRepo) Update(m model.{{ .ModelName }}) error {
+    collection := c.Client.Database(c.Database).Collection(c.Collection)
+    update := bson.M{
+        "$set": m,
+    }
+   
+    filter := bson.M{"_id": m.ID}
+    _, err := collection.UpdateOne(context.TODO(), filter, update)
+    return err
 }
 
 func (c *MongoRepo) Delete(id string) error {
