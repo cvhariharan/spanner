@@ -67,9 +67,13 @@ func (c *MongoRepo) Update(m model.{{ .ModelName }}) error {
     update := bson.M{
         "$set": m,
     }
-   
-    filter := bson.M{"_id": m.ID}
-    _, err := collection.UpdateOne(context.TODO(), filter, update)
+    objectId, err := primitive.ObjectIDFromHex(m.ID)
+    if err != nil {
+        log.Println(err)
+        return err
+    }
+    filter := bson.M{"_id": objectId}
+    _, err = collection.UpdateOne(context.TODO(), filter, update)
     return err
 }
 

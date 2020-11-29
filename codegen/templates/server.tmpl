@@ -8,7 +8,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
     "github.com/cvhariharan/test-crud/model"
     "github.com/cvhariharan/test-crud/repo"
-    "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type handler struct {
@@ -24,6 +23,7 @@ func NewHandler(repository repo.{{ Title .ModelName }}Repo) *handler {
 func (h *handler) create{{ Title .ModelName }}(c echo.Context) error {
     var m model.{{ Title .ModelName }}
     if err := c.Bind(&m); err != nil {
+        log.Println(err)
 		return err
 	}
 
@@ -34,11 +34,7 @@ func (h *handler) create{{ Title .ModelName }}(c echo.Context) error {
         log.Println(err)
         return err
     }
-    m.ID, err = primitive.ObjectIDFromHex(id)
-    if err != nil {
-        log.Println(err)
-        return err
-    }
+    m.ID = id
     return c.JSON(http.StatusCreated, m)
 }
 
@@ -71,7 +67,7 @@ func (h *handler) update{{ Title .ModelName }}(c echo.Context) error {
         return err
     }
 
-    m, err = h.repository.Get(m.ID.Hex())
+    m, err = h.repository.Get(m.ID)
     if err != nil {
         log.Println(err)
         return err
@@ -119,7 +115,7 @@ func main() {
 	// e.GET("/{{.ModelName}}s", h.getAllUsers)
 	e.POST("/{{.ModelName}}s", h.create{{ Title .ModelName }})
 	e.GET("/{{.ModelName}}s/:id", h.get{{ Title .ModelName }})
-	e.PUT("/{{.ModelName}}s/:id", h.update{{ Title .ModelName }})
+	e.PUT("/{{.ModelName}}s", h.update{{ Title .ModelName }})
 	e.DELETE("/{{.ModelName}}s/:id", h.delete{{ Title .ModelName }})
 
 	// Start server
