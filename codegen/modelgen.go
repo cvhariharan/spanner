@@ -10,10 +10,11 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/cvhariharan/spanner/config"
 	"github.com/cvhariharan/spanner/parser"
 )
 
-func GenerateModel(filename, templatePath string) error {
+func GenerateModel(filename, templatePath string, cfg config.Config) error {
 	f, err := os.Open(filename)
 	if err != nil {
 		return err
