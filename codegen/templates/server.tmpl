@@ -1,0 +1,127 @@
+package main
+
+import (
+	"net/http"
+    "log"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+    "github.com/cvhariharan/test-crud/model"
+    "github.com/cvhariharan/test-crud/repo"
+    "go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+type handler struct {
+    repository repo.{{ Title .ModelName }}Repo
+}
+
+func NewHandler(repository repo.{{ Title .ModelName }}Repo) *handler {
+    return &handler {
+        repository,
+    }
+}
+
+func (h *handler) create{{ Title .ModelName }}(c echo.Context) error {
+    var m model.{{ Title .ModelName }}
+    if err := c.Bind(&m); err != nil {
+		return err
+	}
+
+    // ADD BUSINESS LOGIC HERE IF REQUIRED
+
+    id, err := h.repository.Insert(m)
+    if err != nil {
+        log.Println(err)
+        return err
+    }
+    m.ID, err = primitive.ObjectIDFromHex(id)
+    if err != nil {
+        log.Println(err)
+        return err
+    }
+    return c.JSON(http.StatusCreated, m)
+}
+
+func (h *handler) get{{ Title .ModelName }}(c echo.Context) error {
+    id := c.Param("id")
+    if id == "" {
+        log.Println("ID param is empty")
+        return c.NoContent(http.StatusBadRequest)
+    }
+
+    m, err := h.repository.Get(id)
+    if err != nil {
+        log.Println(err)
+        return err
+    }
+    return c.JSON(http.StatusOK, m)
+}
+
+func (h *handler) update{{ Title .ModelName }}(c echo.Context) error {
+    var m model.{{ Title .ModelName }}
+    if err := c.Bind(&m); err != nil {
+		return err
+	}
+
+    // ADD BUSINESS LOGIC HERE IF REQUIRED
+
+    err := h.repository.Update(m)
+    if err != nil {
+        log.Println(err)
+        return err
+    }
+
+    m, err = h.repository.Get(m.ID.Hex())
+    if err != nil {
+        log.Println(err)
+        return err
+    }
+
+    return c.JSON(http.StatusOK, m)
+}
+
+func (h *handler) delete{{ Title .ModelName }}(c echo.Context) error {
+    id := c.Param("id")
+    if id == "" {
+        log.Println("ID param is empty")
+        return c.NoContent(http.StatusBadRequest)
+    }
+
+    err := h.repository.Delete(id)
+    if err != nil {
+        log.Println(err)
+        return err
+    }
+
+    return c.NoContent(http.StatusOK)
+}
+
+// func getAll{{ Title .ModelName }}(c echo.Context) error {
+//    
+// }
+
+func main() {
+	e := echo.New()
+
+	// Middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
+    uri := "mongodb://mongoadmin:secret@localhost:27017"
+    
+    repo, err := repo.NewMongoRepo(uri, "crud", "{{ TitleLower .ModelName }}")
+    if err != nil {
+        log.Fatal(err)
+    }
+    h := NewHandler(repo)
+
+	// Routes
+	// e.GET("/{{.ModelName}}s", h.getAllUsers)
+	e.POST("/{{.ModelName}}s", h.create{{ Title .ModelName }})
+	e.GET("/{{.ModelName}}s/:id", h.get{{ Title .ModelName }})
+	e.PUT("/{{.ModelName}}s/:id", h.update{{ Title .ModelName }})
+	e.DELETE("/{{.ModelName}}s/:id", h.delete{{ Title .ModelName }})
+
+	// Start server
+	e.Logger.Fatal(e.Start(":5000"))
+}

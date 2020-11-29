@@ -21,4 +21,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	err = codegen.GenerateServer(os.Args[1], templatePath)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
