@@ -1,0 +1,4 @@
+serve: main.go
+	go run main.go
+db:
+	sudo docker run -d --rm -e MONGO_INITDB_ROOT_USERNAME=mongoadmin -e MONGO_INITDB_ROOT_PASSWORD=secret -p 27017:27017 mongo

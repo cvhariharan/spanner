@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"text/template"
@@ -79,16 +80,24 @@ func GenerateRepo(filename, templatePath string, cfg config.Config) error {
 			},
 		}).ParseFiles(templatePath + "/mongorepo.tmpl"))
 
-	if _, err := os.Stat("repo"); os.IsNotExist(err) {
-		os.Mkdir("repo", os.ModePerm)
+	if _, err := os.Stat("modules"); os.IsNotExist(err) {
+		os.Mkdir("modules", os.ModePerm)
 	}
 
-	outrepo, err := os.Create("repo/repo.gen.go")
+	if _, err := os.Stat(filepath.Join("modules", modelName)); os.IsNotExist(err) {
+		os.Mkdir(filepath.Join("modules", modelName), os.ModePerm)
+	}
+
+	if _, err := os.Stat(filepath.Join("modules", modelName, "repo")); os.IsNotExist(err) {
+		os.Mkdir(filepath.Join("modules", modelName, "repo"), os.ModePerm)
+	}
+
+	outrepo, err := os.Create(filepath.Join("modules", modelName, "repo", "repo.gen.go"))
 	if err != nil {
 		return err
 	}
 
-	outmongo, err := os.Create("repo/mongorepo.gen.go")
+	outmongo, err := os.Create(filepath.Join("modules", modelName, "repo", "mongorepo.gen.go"))
 	if err != nil {
 		return err
 	}
