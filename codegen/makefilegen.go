@@ -2,14 +2,24 @@ package codegen
 
 import (
 	"bytes"
+	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 	"text/template"
 
 	"github.com/cvhariharan/spanner/config"
+	"github.com/markbates/pkger"
 )
 
 func GenerateMakefile(filename, templatePath string, cfg config.Config) error {
+	tf, err := pkger.Open("/codegen/templates/makefile.tmpl")
+	if err != nil {
+		log.Fatal(err)
+	}
+	b, err := ioutil.ReadAll(tf)
+	templateString := string(b)
+
 	t := template.Must(template.New("makefile.tmpl").Funcs(
 		template.FuncMap{
 			"Title": strings.Title,
@@ -22,7 +32,7 @@ func GenerateMakefile(filename, templatePath string, cfg config.Config) error {
 				rest := bts[1:]
 				return string(bytes.Join([][]byte{lc, rest}, nil))
 			},
-		}).ParseFiles(templatePath + "/makefile.tmpl"))
+		}).Parse(templateString))
 
 	out, err := os.Create("Makefile")
 	if err != nil {

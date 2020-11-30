@@ -4,9 +4,8 @@ go 1.15
 
 require (
 	github.com/kkyr/fig v0.2.0
-	github.com/spf13/viper v1.7.1 // indirect
-	github.com/swaggo/swag v1.6.9 // indirect
-	go.mongodb.org/mongo-driver v1.4.3 // indirect
+	github.com/markbates/pkger v0.17.1
+	github.com/pelletier/go-toml v1.7.0 // indirect
 	golang.org/x/mod v0.3.0
-	honnef.co/go/tools v0.0.1-2019.2.3
+	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 // indirect
 )

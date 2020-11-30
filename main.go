@@ -32,17 +32,17 @@ func main() {
 
 	cfg.ModulePath = getModPath()
 
-	err = codegen.GenerateModel(os.Args[1], templatePath, cfg)
+	err = codegen.GenerateModel(os.Args[1], cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = codegen.GenerateRepo(os.Args[1], templatePath, cfg)
+	err = codegen.GenerateRepo(os.Args[1], cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = codegen.GenerateServer(os.Args[1], templatePath, cfg)
+	err = codegen.GenerateServer(os.Args[1], cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
