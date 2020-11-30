@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -13,9 +14,10 @@ import (
 
 	"github.com/cvhariharan/spanner/config"
 	"github.com/cvhariharan/spanner/parser"
+	"github.com/markbates/pkger"
 )
 
-func GenerateModel(filename, templatePath string, cfg config.Config) error {
+func GenerateModel(filename string, cfg config.Config) error {
 	f, err := os.Open(filename)
 	if err != nil {
 		return err
@@ -55,6 +57,13 @@ func GenerateModel(filename, templatePath string, cfg config.Config) error {
 		modelMap,
 	}
 
+	tf, err := pkger.Open("/codegen/templates/model.tmpl")
+	if err != nil {
+		log.Fatal(err)
+	}
+	b, err := ioutil.ReadAll(tf)
+	templateString := string(b)
+
 	t := template.Must(template.New("model.tmpl").Funcs(
 		template.FuncMap{
 			"Title": strings.Title,
@@ -67,7 +76,7 @@ func GenerateModel(filename, templatePath string, cfg config.Config) error {
 				rest := bts[1:]
 				return string(bytes.Join([][]byte{lc, rest}, nil))
 			},
-		}).ParseFiles(templatePath + "/model.tmpl"))
+		}).Parse(templateString))
 
 	if _, err := os.Stat("modules"); os.IsNotExist(err) {
 		os.Mkdir("modules", os.ModePerm)

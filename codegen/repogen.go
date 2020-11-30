@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -12,9 +13,10 @@ import (
 	"text/template"
 
 	"github.com/cvhariharan/spanner/config"
+	"github.com/markbates/pkger"
 )
 
-func GenerateRepo(filename, templatePath string, cfg config.Config) error {
+func GenerateRepo(filename string, cfg config.Config) error {
 	f, err := os.Open(filename)
 	if err != nil {
 		return err
@@ -52,6 +54,20 @@ func GenerateRepo(filename, templatePath string, cfg config.Config) error {
 		cfg.ModulePath,
 	}
 
+	tfr, err := pkger.Open("/codegen/templates/repo.tmpl")
+	if err != nil {
+		log.Fatal(err)
+	}
+	br, err := ioutil.ReadAll(tfr)
+	repoTemplateString := string(br)
+
+	tfm, err := pkger.Open("/codegen/templates/mongorepo.tmpl")
+	if err != nil {
+		log.Fatal(err)
+	}
+	bm, err := ioutil.ReadAll(tfm)
+	mongoTemplateString := string(bm)
+
 	repo := template.Must(template.New("repo.tmpl").Funcs(
 		template.FuncMap{
 			"Title": strings.Title,
@@ -64,7 +80,7 @@ func GenerateRepo(filename, templatePath string, cfg config.Config) error {
 				rest := bts[1:]
 				return string(bytes.Join([][]byte{lc, rest}, nil))
 			},
-		}).ParseFiles(templatePath + "/repo.tmpl"))
+		}).Parse(repoTemplateString))
 
 	mongo := template.Must(template.New("mongorepo.tmpl").Funcs(
 		template.FuncMap{
@@ -78,7 +94,7 @@ func GenerateRepo(filename, templatePath string, cfg config.Config) error {
 				rest := bts[1:]
 				return string(bytes.Join([][]byte{lc, rest}, nil))
 			},
-		}).ParseFiles(templatePath + "/mongorepo.tmpl"))
+		}).Parse(mongoTemplateString))
 
 	if _, err := os.Stat("modules"); os.IsNotExist(err) {
 		os.Mkdir("modules", os.ModePerm)

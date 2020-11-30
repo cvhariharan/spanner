@@ -5,15 +5,17 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"log"
 	"os"
 	"reflect"
 	"strings"
 	"text/template"
 
 	"github.com/cvhariharan/spanner/config"
+	"github.com/markbates/pkger"
 )
 
-func GenerateServer(filename, templatePath string, cfg config.Config) error {
+func GenerateServer(filename string, cfg config.Config) error {
 	f, err := os.Open(filename)
 	if err != nil {
 		return err
@@ -47,6 +49,13 @@ func GenerateServer(filename, templatePath string, cfg config.Config) error {
 		cfg.ModulePath,
 	}
 
+	tf, err := pkger.Open("/codegen/templates/server.tmpl")
+	if err != nil {
+		log.Fatal(err)
+	}
+	b, err := ioutil.ReadAll(tf)
+	templateString := string(b)
+
 	t := template.Must(template.New("server.tmpl").Funcs(
 		template.FuncMap{
 			"Title": strings.Title,
@@ -59,7 +68,7 @@ func GenerateServer(filename, templatePath string, cfg config.Config) error {
 				rest := bts[1:]
 				return string(bytes.Join([][]byte{lc, rest}, nil))
 			},
-		}).ParseFiles(templatePath + "/server.tmpl"))
+		}).Parse(templateString))
 
 	// if _, err := os.Stat("server"); os.IsNotExist(err) {
 	// 	os.Mkdir("server", os.ModePerm)
