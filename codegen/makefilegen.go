@@ -24,7 +24,7 @@ func GenerateMakefile(filename, templatePath string, cfg config.Config) error {
 			},
 		}).ParseFiles(templatePath + "/makefile.tmpl"))
 
-	out, err := os.Create("makefile")
+	out, err := os.Create("Makefile")
 	if err != nil {
 		return err
 	}
