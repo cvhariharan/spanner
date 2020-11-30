@@ -1,24 +1,20 @@
-package main
+package handler
 
 import (
 	"net/http"
     "log"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
     "{{.ModuleName}}/modules/{{.ModelName}}/model"
     "{{.ModuleName}}/modules/{{.ModelName}}/repo"
-
-    "github.com/swaggo/echo-swagger"
-	_ "github.com/swaggo/echo-swagger/example/docs"
 )
 
-type handler struct {
+type Handler struct {
     repository repo.{{ Title .ModelName }}Repo
 }
 
-func NewHandler(repository repo.{{ Title .ModelName }}Repo) *handler {
-    return &handler {
+func NewHandler(repository repo.{{ Title .ModelName }}Repo) *Handler {
+    return &Handler {
         repository,
     }
 }
@@ -33,7 +29,7 @@ func NewHandler(repository repo.{{ Title .ModelName }}Repo) *handler {
 // @Success 201 {string} string	"Created"
 // @Failure 500 {object} string "Some error occured"
 // @Router /{{.ModelName}}s [post]
-func (h *handler) create{{ Title .ModelName }}(c echo.Context) error {
+func (h *Handler) Create{{ Title .ModelName }}(c echo.Context) error {
     var m model.{{ Title .ModelName }}
     if err := c.Bind(&m); err != nil {
         log.Println(err)
@@ -62,7 +58,7 @@ func (h *handler) create{{ Title .ModelName }}(c echo.Context) error {
 // @Failure 400 {object} string "Bad Request, param empty"
 // @Failure 500 {object} string "Some error occured"
 // @Router /{{.ModelName}}s/{id} [get]
-func (h *handler) get{{ Title .ModelName }}(c echo.Context) error {
+func (h *Handler) Get{{ Title .ModelName }}(c echo.Context) error {
     id := c.Param("id")
     if id == "" {
         log.Println("ID param is empty")
@@ -87,7 +83,7 @@ func (h *handler) get{{ Title .ModelName }}(c echo.Context) error {
 // @Success 200 {string} string	"Ok"
 // @Failure 500 {object} string "Some error occured"
 // @Router /{{.ModelName}}s [put]
-func (h *handler) update{{ Title .ModelName }}(c echo.Context) error {
+func (h *Handler) Update{{ Title .ModelName }}(c echo.Context) error {
     var m model.{{ Title .ModelName }}
     if err := c.Bind(&m); err != nil {
 		return err
@@ -121,7 +117,7 @@ func (h *handler) update{{ Title .ModelName }}(c echo.Context) error {
 // @Failure 400 {object} string "Bad Request, param empty"
 // @Failure 500 {object} string "Some error occured"
 // @Router /{{.ModelName}}s/{id} [delete]
-func (h *handler) delete{{ Title .ModelName }}(c echo.Context) error {
+func (h *Handler) Delete{{ Title .ModelName }}(c echo.Context) error {
     id := c.Param("id")
     if id == "" {
         log.Println("ID param is empty")
@@ -140,44 +136,3 @@ func (h *handler) delete{{ Title .ModelName }}(c echo.Context) error {
 // func getAll{{ Title .ModelName }}(c echo.Context) error {
 //    
 // }
-
-
-// @title {{Title .ModelName}} CRUD API
-// @version 1.0
-// @description This is a spanner generated CRUD API
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host localhost:5000
-
-func main() {
-	e := echo.New()
-
-	// Middleware
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-    e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-    TokenLookup: "header:X-XSRF-TOKEN",
-    }))
-
-    e.GET("/swagger/*", echoSwagger.WrapHandler)
-
-    uri := "mongodb://mongoadmin:secret@localhost:27017"
-    
-    repo, err := repo.NewMongoRepo(uri, "crud", "{{ TitleLower .ModelName }}")
-    if err != nil {
-        log.Fatal(err)
-    }
-    h := NewHandler(repo)
-
-	// Routes
-	// e.GET("/{{.ModelName}}s", h.getAllUsers)
-	e.POST("/{{.ModelName}}s", h.create{{ Title .ModelName }})
-	e.GET("/{{.ModelName}}s/:id", h.get{{ Title .ModelName }})
-	e.PUT("/{{.ModelName}}s", h.update{{ Title .ModelName }})
-	e.DELETE("/{{.ModelName}}s/:id", h.delete{{ Title .ModelName }})
-
-	// Start server
-	e.Logger.Fatal(e.Start(":5000"))
-}

@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"text/template"
@@ -49,14 +50,21 @@ func GenerateServer(filename string, cfg config.Config) error {
 		cfg.ModulePath,
 	}
 
-	tf, err := pkger.Open("/codegen/templates/server.tmpl")
+	tfm, err := pkger.Open("/codegen/templates/main.tmpl")
 	if err != nil {
 		log.Fatal(err)
 	}
-	b, err := ioutil.ReadAll(tf)
-	templateString := string(b)
+	bm, err := ioutil.ReadAll(tfm)
+	mainTemplateString := string(bm)
 
-	t := template.Must(template.New("server.tmpl").Funcs(
+	tfh, err := pkger.Open("/codegen/templates/handler.tmpl")
+	if err != nil {
+		log.Fatal(err)
+	}
+	bh, err := ioutil.ReadAll(tfh)
+	handlerTemplateString := string(bh)
+
+	tm := template.Must(template.New("main.tmpl").Funcs(
 		template.FuncMap{
 			"Title": strings.Title,
 			"TitleLower": func(s string) string {
@@ -68,17 +76,39 @@ func GenerateServer(filename string, cfg config.Config) error {
 				rest := bts[1:]
 				return string(bytes.Join([][]byte{lc, rest}, nil))
 			},
-		}).Parse(templateString))
+		}).Parse(mainTemplateString))
 
-	// if _, err := os.Stat("server"); os.IsNotExist(err) {
-	// 	os.Mkdir("server", os.ModePerm)
-	// }
+	th := template.Must(template.New("handler.tmpl").Funcs(
+		template.FuncMap{
+			"Title": strings.Title,
+			"TitleLower": func(s string) string {
+				if len(s) < 2 {
+					return strings.ToLower(s)
+				}
+				bts := []byte(s)
+				lc := bytes.ToLower([]byte{bts[0]})
+				rest := bts[1:]
+				return string(bytes.Join([][]byte{lc, rest}, nil))
+			},
+		}).Parse(handlerTemplateString))
 
-	out, err := os.Create("main.go")
+	if _, err := os.Stat("handler"); os.IsNotExist(err) {
+		os.Mkdir("handler", os.ModePerm)
+	}
+
+	outm, err := os.Create("main.go")
 	if err != nil {
 		return err
 	}
-	err = t.Execute(out, genData)
+	outh, err := os.Create(filepath.Join("handler", "handler.go"))
+	if err != nil {
+		return err
+	}
+	err = tm.Execute(outm, genData)
+	if err != nil {
+		return err
+	}
+	err = th.Execute(outh, genData)
 	if err != nil {
 		return err
 	}
