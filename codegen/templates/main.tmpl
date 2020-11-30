@@ -1,0 +1,51 @@
+package main
+
+import (
+    "log"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+
+    "github.com/swaggo/echo-swagger"
+	_ "github.com/swaggo/echo-swagger/example/docs"
+	"{{.ModuleName}}/handler"
+	"{{.ModuleName}}/modules/{{.ModelName}}/repo"
+)
+
+// @title {{Title .ModelName}} CRUD API
+// @version 1.0
+// @description This is a spanner generated CRUD API
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:5000
+func main() {
+	e := echo.New()
+
+	// Middlewares
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+    e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+    TokenLookup: "header:X-XSRF-TOKEN",
+    }))
+
+    e.GET("/swagger/*", echoSwagger.WrapHandler)
+
+    uri := "mongodb://mongoadmin:secret@localhost:27017"
+    
+    repo, err := repo.NewMongoRepo(uri, "crud", "{{ TitleLower .ModelName }}")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+	// Routes
+    h := handler.NewHandler(repo)
+	e.POST("/{{.ModelName}}s", h.Create{{ Title .ModelName }})
+	e.GET("/{{.ModelName}}s/:id", h.Get{{ Title .ModelName }})
+	e.PUT("/{{.ModelName}}s", h.Update{{ Title .ModelName }})
+	e.DELETE("/{{.ModelName}}s/:id", h.Delete{{ Title .ModelName }})
+
+	// Start server
+	e.Logger.Fatal(e.Start(":5000"))
+}
