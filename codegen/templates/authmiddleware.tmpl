@@ -1,0 +1,68 @@
+package handler
+
+import (
+	"context"
+	"errors"
+	"log"
+	"net/http"
+	"strings"
+
+	"github.com/coreos/go-oidc"
+	"github.com/labstack/echo/v4"
+)
+
+const AUTH_HEADER = "Authorization"
+
+type Claims struct {
+	Sub   string `json:"sub"`
+	Email string `json:"email"`
+}
+
+type AuthConfig struct {
+   	ClientId     string
+	ClientSecret string
+	RedirectUrl  string
+	ConfigUrl    string
+}
+
+func Authenticate(cfg AuthConfig) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			ctx := context.Background()
+
+			provider, err := oidc.NewProvider(ctx, cfg.ConfigUrl)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusUnauthorized, "Invalid authorization token format")
+			}
+			oidcConfig := &oidc.Config{
+				ClientID: cfg.ClientId,
+			}
+
+			verifier := provider.Verifier(oidcConfig)
+
+			bearer := c.Request().Header.Get(AUTH_HEADER)
+			parts := strings.Split(bearer, " ")
+
+			var claims Claims
+			if len(parts) == 2 {
+				idToken, err := verifier.Verify(ctx, parts[1])
+				if err != nil {
+					log.Println(err)
+					return echo.NewHTTPError(http.StatusUnauthorized, "Invalid token")
+				}
+
+				err = idToken.Claims(&claims)
+				if err != nil {
+					log.Println(err)
+					return echo.NewHTTPError(http.StatusUnauthorized, "Invalid claims")
+				}
+				// Set user context
+				c.Set("userId", claims.Sub)
+				c.Set("email", claims.Email)
+				c.Set("token", parts[1])
+				return next(c)
+			}
+			return errors.New("Token not found or invalid token")
+		}
+	}
+}

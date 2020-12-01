@@ -47,6 +47,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	err = codegen.GenerateMiddlewares(os.Args[1], cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	err = codegen.GenerateMakefile(os.Args[1], templatePath, cfg)
 	if err != nil {
 		log.Fatal(err)

@@ -44,10 +44,12 @@ func GenerateServer(filename string, cfg config.Config) error {
 		PackageName string
 		ModelName   string
 		ModuleName  string
+		AuthEnable  bool
 	}{
 		"server",
 		modelName,
 		cfg.ModulePath,
+		cfg.OAuth.Enable,
 	}
 
 	tfm, err := pkger.Open("/codegen/templates/main.tmpl")

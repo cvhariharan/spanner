@@ -10,6 +10,10 @@ import (
 	_ "github.com/swaggo/echo-swagger/example/docs"
 	"{{.ModuleName}}/handler"
 	"{{.ModuleName}}/modules/{{.ModelName}}/repo"
+	{{if .AuthEnable}}
+	"github.com/joho/godotenv"
+	"github.com/kelseyhightower/envconfig"
+	{{end}}
 )
 
 // @title {{Title .ModelName}} CRUD API
@@ -21,15 +25,28 @@ import (
 
 // @host localhost:5000
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	{{if .AuthEnable}}
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	var cfg handler.AuthConfig
+	err = envconfig.Process("FILE", &cfg)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	{{end}}
 	e := echo.New()
-
 	// Middlewares
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
     e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
     TokenLookup: "header:X-XSRF-TOKEN",
     }))
-
+	{{if .AuthEnable}}
+	e.Use(handler.Authenticate(cfg))
+	{{end}}
     e.GET("/swagger/*", echoSwagger.WrapHandler)
 
     uri := "mongodb://mongoadmin:secret@localhost:27017"

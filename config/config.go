@@ -8,4 +8,11 @@ type Config struct {
 		DB         string `fig:"db,default:spanner"`
 		Collection string `fig:"collection,default:models"`
 	}
+	OAuth struct {
+		Enable       bool   `fig:"enable"`
+		ClientId     string `fig:"clientId"`
+		ClientSecret string `fig:"clientSecret"`
+		RedirectUrl  string `fig:"redirectUrl"`
+		ConfigUrl    string `fig:"configUrl"`
+	}
 }
