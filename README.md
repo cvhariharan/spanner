@@ -6,6 +6,8 @@
 
  Spanner connects to MongoDB out-of-the-box but it also generates a repo interface which can be implemented to support other databases. It can convert an example model given in JSON format to Golang struct with type-safety.
 
+ Spanner generates an [echo](https://echo.labstack.com/) server and thus supports a wide range of pre-made middlewares.
+
  ## Features
  - [x] Generates REST APIs (CRUD) 
  - [x] Auto-generates swagger spec
@@ -47,10 +49,22 @@
     }
 }
  ```
- and run
+ OIDC can be enabled by creating a `config.yaml` file before running the `spanner` command.
+```yaml
+OAuth:
+    enable: True
+    clientId: "<clientID>"
+    clientSecret: "<clientSecret>"
+    redirectUrl: "<redirectUrl>"
+    configUrl: "<Eg: https://YOUR_DOMAIN/.well-known/openid-configuration>"
+```
+ then run
  ```bash
  spanner example.json
  ```
+
+Right now, if OIDC is enabled then authentication is enabled for all endpoints. The client must be authenticated at all times. This can be fixed by setting route level middleware in `main.go`
+
  ### Folder structure
 ```
  crud-app/
@@ -70,4 +84,4 @@
 │  │  │  ├─ repo.gen.go
 ├─ Makefile
 ```
-
+Additional business logic can be added in `handler/handler.go`.
