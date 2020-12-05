@@ -17,7 +17,7 @@ import (
 	"github.com/markbates/pkger"
 )
 
-var templateList []string = []string{"handler.tmpl", "main.tmpl", "makefile.tmpl", "model.tmpl", "mongorepo.tmpl", "repo.tmpl"}
+var templateList []string = []string{"handler.tmpl", "main.tmpl", "makefile.tmpl", "model.tmpl", "mongorepo.tmpl", "repo.tmpl", "dockerfile.tmpl"}
 var packageMap = map[string]string{
 	"handler.tmpl":        "handler",
 	"authmiddleware.tmpl": "handler",
@@ -36,6 +36,7 @@ var fileName = map[string]string{
 	"repo.tmpl":           "repo.gen.go",
 	"makefile.tmpl":       "Makefile",
 	"env.tmpl":            "env",
+	"dockerfile.tmpl":     "Dockerfile",
 }
 
 func Generate(filename string, cfg config.Config) error {
@@ -132,7 +133,7 @@ func Generate(filename string, cfg config.Config) error {
 					return string(bytes.Join([][]byte{lc, rest}, nil))
 				},
 			}).Parse(templateString))
-		log.Println(filepath.Join(prefixPathMap[v], fileName[v]))
+
 		out, err := os.Create(filepath.Join(prefixPathMap[v], fileName[v]))
 		if err != nil {
 			return err

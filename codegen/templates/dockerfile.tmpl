@@ -1,0 +1,8 @@
+FROM golang:alpine AS builder
+WORKDIR $GOPATH/src/{{.ModuleName}}
+COPY . .
+RUN go build -o /go/bin/{{TitleLower .ModelName}}service
+
+FROM scratch
+COPY --from=builder /go/bin/{{TitleLower .ModelName}}service /go/bin/{{TitleLower .ModelName}}service
+ENTRYPOINT ["/go/bin/{{TitleLower .ModelName}}service"]
