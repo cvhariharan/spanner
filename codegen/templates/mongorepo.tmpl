@@ -20,7 +20,7 @@ type MongoRepo struct {
     Database string
 }
 
-func NewMongoRepo(uri, database, collection string) ({{.ModelName}}Repo, error){
+func NewMongoRepo(uri, database, collection string) ({{Title .ModelName}}Repo, error){
     client, err := mongo.NewClient(options.Client().ApplyURI(uri))
     if err != nil {
         return nil, err
@@ -38,7 +38,7 @@ func NewMongoRepo(uri, database, collection string) ({{.ModelName}}Repo, error){
     }, nil
 }
 
-func (c *MongoRepo) Insert(m model.{{ .ModelName }}) (string, error) {
+func (c *MongoRepo) Insert(m model.{{ Title .ModelName }}) (string, error) {
     collection := c.Client.Database(c.Database).Collection(c.Collection)
     res, err := collection.InsertOne(context.TODO(), m)
     if err != nil {
@@ -49,20 +49,20 @@ func (c *MongoRepo) Insert(m model.{{ .ModelName }}) (string, error) {
     return res.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func (c *MongoRepo) Get(id string) (model.{{ .ModelName }}, error) {
+func (c *MongoRepo) Get(id string) (model.{{ Title .ModelName }}, error) {
     collection := c.Client.Database(c.Database).Collection(c.Collection)
-    var m model.{{ .ModelName }}
+    var m model.{{ Title .ModelName }}
     
     objectId, err := primitive.ObjectIDFromHex(id)
     if err != nil {
         log.Println(err)
-        return model.{{ .ModelName }}{}, err
+        return model.{{ Title .ModelName }}{}, err
     }
     collection.FindOne(context.TODO(), bson.M{"_id": objectId}).Decode(&m)
     return m, nil
 }
 
-func (c *MongoRepo) Update(m model.{{ .ModelName }}) error {
+func (c *MongoRepo) Update(m model.{{ Title .ModelName }}) error {
     collection := c.Client.Database(c.Database).Collection(c.Collection)
     update := bson.M{
         "$set": m,

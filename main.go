@@ -20,7 +20,7 @@ func main() {
 	if len(os.Args) < 2 {
 		log.Fatal("Expected models filename")
 	}
-	templatePath := os.Getenv("TEMPLATE")
+	// templatePath := os.Getenv("TEMPLATE")
 
 	exec.Command("rm", "go.mod", "go.sum").Run()
 
@@ -32,30 +32,35 @@ func main() {
 
 	cfg.ModulePath = getModPath()
 
-	err = codegen.GenerateModel(os.Args[1], cfg)
+	err = codegen.Generate(os.Args[1], cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = codegen.GenerateRepo(os.Args[1], cfg)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// err = codegen.GenerateModel(os.Args[1], cfg)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	err = codegen.GenerateServer(os.Args[1], cfg)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// err = codegen.GenerateRepo(os.Args[1], cfg)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	err = codegen.GenerateMiddlewares(os.Args[1], cfg)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// err = codegen.GenerateServer(os.Args[1], cfg)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	err = codegen.GenerateMakefile(os.Args[1], templatePath, cfg)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// err = codegen.GenerateMiddlewares(os.Args[1], cfg)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// err = codegen.GenerateMakefile(os.Args[1], templatePath, cfg)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
 func getModPath() string {
