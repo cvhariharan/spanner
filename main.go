@@ -9,13 +9,13 @@ import (
 	"github.com/cvhariharan/spanner/config"
 
 	"github.com/cvhariharan/spanner/codegen"
-	"github.com/kkyr/fig"
+	"github.com/jinzhu/configor"
 	"golang.org/x/mod/modfile"
 )
 
 func main() {
 	var cfg config.Config
-	err := fig.Load(&cfg)
+	configor.Load(&cfg, "config.yml")
 
 	if len(os.Args) < 2 {
 		log.Fatal("Expected models filename")
@@ -25,7 +25,7 @@ func main() {
 	exec.Command("rm", "go.mod", "go.sum").Run()
 
 	goModCmd := exec.Command("go", "mod", "init")
-	err = goModCmd.Run()
+	err := goModCmd.Run()
 	if err != nil {
 		log.Fatal(err)
 	}

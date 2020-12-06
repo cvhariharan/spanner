@@ -64,5 +64,5 @@ func main() {
 	e.DELETE("/{{.ModelName}}s/:id", h.Delete{{ Title .ModelName }})
 
 	// Start server
-	e.Logger.Fatal(e.Start(":5000"))
+	e.Logger.Fatal(e.Start(":{{.Port}}"))
 }

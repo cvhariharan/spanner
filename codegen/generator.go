@@ -95,6 +95,7 @@ func Generate(filename string, cfg config.Config) error {
 		ClientSecret  string
 		RedirectURL   string
 		ConfigURL     string
+		Port          string
 	}{
 		"",
 		modelName,
@@ -106,6 +107,7 @@ func Generate(filename string, cfg config.Config) error {
 		cfg.OAuth.ClientSecret,
 		cfg.OAuth.RedirectUrl,
 		cfg.OAuth.ConfigUrl,
+		cfg.Port,
 	}
 
 	// log.Println(prefixPathMap["model.tmpl"])

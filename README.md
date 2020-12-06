@@ -53,10 +53,11 @@
 ```yaml
 OAuth:
     enable: True
-    clientId: "<clientID>"
-    clientSecret: "<clientSecret>"
-    redirectUrl: "<redirectUrl>"
-    configUrl: "<Eg: https://YOUR_DOMAIN/.well-known/openid-configuration>"
+    clientid: "<clientID>"
+    clientsecret: "<clientSecret>"
+    redirecturl: "<redirectUrl>"
+    configurl: "<Eg: https://YOUR_DOMAIN/.well-known/openid-configuration>"
+port: "7000"
 ```
  then run
  ```bash
