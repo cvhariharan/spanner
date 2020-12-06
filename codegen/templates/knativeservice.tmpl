@@ -1,0 +1,12 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+ name: {{.ModelName}}-service
+ namespace: default
+spec:
+ template:
+  spec:
+   containers:
+    - image: {{.DockerUsername}}/{{.ModelName}}-service
+      ports:
+      - containerPort: {{.Port}}

@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	var cfg config.Config
 	configor.Load(&cfg, "config.yml")
 

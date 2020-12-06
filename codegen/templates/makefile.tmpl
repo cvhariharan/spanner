@@ -6,3 +6,22 @@ db:
 	docker run -d --rm -e MONGO_INITDB_ROOT_USERNAME=mongoadmin -e MONGO_INITDB_ROOT_PASSWORD=secret -p 27017:27017 mongo
 reset:
 	find . ! -name *.json ! -name *.yml ! -name *.yaml -delete
+
+.PHONY: docker-build
+docker-build:
+	docker build . -t {{.DockerUsername}}/{{.ModelName}}-service
+
+docker-buildx:
+	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --tag {{.DockerUsername}}/{{.ModelName}}-service --push  .
+
+.PHONY: docker-push
+docker-push:
+	sudo docker push {{.DockerUsername}}/{{.ModelName}}-service:latest
+
+.PHONY: kdeploy
+kdeploy: docker-build docker-push
+	kubectl apply --filename service.yml
+
+.PHONY: kdeploy-rpi
+kdeploy-rpi: docker-buildx
+	kubectl apply --filename service.yml

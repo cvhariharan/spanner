@@ -15,5 +15,6 @@ type Config struct {
 		RedirectUrl  string
 		ConfigUrl    string
 	}
-	Port string `default:"5000"`
+	Port           string `default:"5000"`
+	DockerUsername string `required:"true"`
 }

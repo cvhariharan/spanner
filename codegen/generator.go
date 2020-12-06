@@ -17,7 +17,7 @@ import (
 	"github.com/markbates/pkger"
 )
 
-var templateList []string = []string{"handler.tmpl", "main.tmpl", "makefile.tmpl", "model.tmpl", "mongorepo.tmpl", "repo.tmpl", "dockerfile.tmpl"}
+var templateList []string = []string{"knativeservice.tmpl", "handler.tmpl", "main.tmpl", "makefile.tmpl", "model.tmpl", "mongorepo.tmpl", "repo.tmpl", "dockerfile.tmpl"}
 var packageMap = map[string]string{
 	"handler.tmpl":        "handler",
 	"authmiddleware.tmpl": "handler",
@@ -37,6 +37,7 @@ var fileName = map[string]string{
 	"makefile.tmpl":       "Makefile",
 	"env.tmpl":            "env",
 	"dockerfile.tmpl":     "Dockerfile",
+	"knativeservice.tmpl": "service.yml",
 }
 
 func Generate(filename string, cfg config.Config) error {
@@ -85,17 +86,18 @@ func Generate(filename string, cfg config.Config) error {
 	generateDirectories(prefixPathMap)
 
 	genData := struct {
-		PackageName   string
-		ModelName     string
-		ModuleName    string
-		AuthEnable    bool
-		MainModelName string
-		ModelMap      map[string]map[string]string
-		ClientID      string
-		ClientSecret  string
-		RedirectURL   string
-		ConfigURL     string
-		Port          string
+		PackageName    string
+		ModelName      string
+		ModuleName     string
+		AuthEnable     bool
+		MainModelName  string
+		ModelMap       map[string]map[string]string
+		ClientID       string
+		ClientSecret   string
+		RedirectURL    string
+		ConfigURL      string
+		Port           string
+		DockerUsername string
 	}{
 		"",
 		modelName,
@@ -108,6 +110,7 @@ func Generate(filename string, cfg config.Config) error {
 		cfg.OAuth.RedirectUrl,
 		cfg.OAuth.ConfigUrl,
 		cfg.Port,
+		cfg.DockerUsername,
 	}
 
 	// log.Println(prefixPathMap["model.tmpl"])

@@ -51,13 +51,14 @@
  ```
  OIDC can be enabled by creating a `config.yaml` file before running the `spanner` command.
 ```yaml
-OAuth:
+oauth:
     enable: True
     clientid: "<clientID>"
     clientsecret: "<clientSecret>"
     redirecturl: "<redirectUrl>"
     configurl: "<Eg: https://YOUR_DOMAIN/.well-known/openid-configuration>"
 port: "7000"
+dockerusername: "<docker username>"
 ```
  then run
  ```bash
