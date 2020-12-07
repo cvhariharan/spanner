@@ -7,6 +7,10 @@ db:
 reset:
 	find . ! -name *.json ! -name *.yml ! -name *.yaml -delete
 
+.PHONY: swag
+swag:
+	swag init
+
 .PHONY: docker-build
 docker-build:
 	docker build . -t {{.DockerUsername}}/{{.ModelName}}-service

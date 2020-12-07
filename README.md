@@ -87,3 +87,7 @@ Right now, if OIDC is enabled then authentication is enabled for all endpoints. 
 ├─ Makefile
 ```
 Additional business logic can be added in `handler/handler.go`.
+
+### Deploy
+`Spanner` autogenerates **KNative** deployment file which can be used to deploy the REST API to a Kubernetes cluster. The `Makefile` also has a few recipes like `docker-build`, `docker-push`, `docker-buildx` to build and push docker images to DockerHub. `kdeploy` and `kdeploy-rpi` can be used to build, push the image and deploy to knative in a single command.
+The buildx recipe and be used to deploy to Raspberry Pi too.  
