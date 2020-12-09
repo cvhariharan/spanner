@@ -35,7 +35,7 @@ var fileName = map[string]string{
 	"mongorepo.tmpl":      "mongorepo.gen.go",
 	"repo.tmpl":           "repo.gen.go",
 	"makefile.tmpl":       "Makefile",
-	"env.tmpl":            "env",
+	"env.tmpl":            ".env",
 	"dockerfile.tmpl":     "Dockerfile",
 	"knativeservice.tmpl": "service.yml",
 }
@@ -137,6 +137,7 @@ func Generate(filename string, cfg config.Config) error {
 					rest := bts[1:]
 					return string(bytes.Join([][]byte{lc, rest}, nil))
 				},
+				"Upper": strings.ToUpper,
 			}).Parse(templateString))
 
 		out, err := os.Create(filepath.Join(prefixPathMap[v], fileName[v]))

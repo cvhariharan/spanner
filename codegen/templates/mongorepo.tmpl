@@ -49,17 +49,21 @@ func (c *MongoRepo) Insert(m model.{{ Title .ModelName }}) (string, error) {
     return res.InsertedID.(primitive.ObjectID).Hex(), nil
 }
 
-func (c *MongoRepo) Get(id string) (model.{{ Title .ModelName }}, error) {
+func (c *MongoRepo) Get(id string) (*model.{{ Title .ModelName }}, error) {
     collection := c.Client.Database(c.Database).Collection(c.Collection)
     var m model.{{ Title .ModelName }}
     
     objectId, err := primitive.ObjectIDFromHex(id)
     if err != nil {
         log.Println(err)
-        return model.{{ Title .ModelName }}{}, err
+        return nil, err
     }
+    count, err := collection.CountDocuments(context.Background(), bson.M{"_id": objectId})
+	if err != nil || count == 0 {
+		return nil, err
+	}
     collection.FindOne(context.TODO(), bson.M{"_id": objectId}).Decode(&m)
-    return m, nil
+    return &m, nil
 }
 
 func (c *MongoRepo) Update(m model.{{ Title .ModelName }}) error {
@@ -67,11 +71,13 @@ func (c *MongoRepo) Update(m model.{{ Title .ModelName }}) error {
     update := bson.M{
         "$set": m,
     }
+
     objectId, err := primitive.ObjectIDFromHex(m.ID)
     if err != nil {
         log.Println(err)
         return err
     }
+    
     filter := bson.M{"_id": objectId}
     _, err = collection.UpdateOne(context.TODO(), filter, update)
     return err

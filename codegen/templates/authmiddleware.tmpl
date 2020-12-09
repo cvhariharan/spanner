@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"log"
 	"net/http"
 	"strings"
@@ -62,7 +61,7 @@ func Authenticate(cfg AuthConfig) echo.MiddlewareFunc {
 				c.Set("token", parts[1])
 				return next(c)
 			}
-			return errors.New("Token not found or invalid token")
+			return echo.NewHTTPError(http.StatusUnauthorized, "Authorization header not set")
 		}
 	}
 }

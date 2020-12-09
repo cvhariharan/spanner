@@ -10,11 +10,11 @@ import (
 {{- range $modelName, $modelVal := .ModelMap}}
 type {{ Title $modelName }} struct {
     {{ if (eq $mainModelName $modelName) -}}
-    _ID  primitive.ObjectID `bson:"_id,omitempty"`
-    ID string `json:"id"`
+    _ID primitive.ObjectID `bson:"_id,omitempty"`
+    ID string `json:"id,omitempty"`
     {{ end -}}
     {{- range $field, $type := $modelVal}}
-    {{ Title $field}} {{$type}} `json:"{{ TitleLower $field }}",bson:"{{ TitleLower $field }}"`
+    {{ Title $field}} {{$type}} `json:"{{ TitleLower $field }}" bson:"{{ TitleLower $field }}"`
     {{- end}}
 }
 {{- end}}

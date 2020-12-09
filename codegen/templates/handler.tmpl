@@ -70,6 +70,10 @@ func (h *Handler) Get{{ Title .ModelName }}(c echo.Context) error {
         log.Println(err)
         return err
     }
+    if m == nil {
+        return c.NoContent(http.StatusNotFound)
+    }
+    m.ID = id
     return c.JSON(http.StatusOK, m)
 }
 
@@ -97,13 +101,13 @@ func (h *Handler) Update{{ Title .ModelName }}(c echo.Context) error {
         return err
     }
 
-    m, err = h.repository.Get(m.ID)
+    updatedModel, err := h.repository.Get(m.ID)
     if err != nil {
         log.Println(err)
         return err
     }
 
-    return c.JSON(http.StatusOK, m)
+    return c.JSON(http.StatusOK, updatedModel)
 }
 
 // Delete {{Title .ModelName}}

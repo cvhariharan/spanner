@@ -9,7 +9,7 @@ import (
 
 type {{Title .ModelName}}Repo interface {
     Insert(m model.{{ Title .ModelName }}) (string, error)
-    Get(id string) (model.{{ Title .ModelName }}, error)
+    Get(id string) (*model.{{ Title .ModelName }}, error)
     Update(m model.{{ Title .ModelName }}) error
     Delete(id string) error
 }

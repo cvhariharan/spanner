@@ -23,7 +23,7 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:5000
+// @host localhost:{{.Port}}
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	{{if .AuthEnable}}
@@ -32,7 +32,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 	var cfg handler.AuthConfig
-	err = envconfig.Process("FILE", &cfg)
+	err = envconfig.Process("{{Upper .ModelName}}", &cfg)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -42,7 +42,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
     e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-    TokenLookup: "header:X-XSRF-TOKEN",
+    	TokenLookup: "header:X-XSRF-TOKEN",
     }))
 	{{if .AuthEnable}}
 	e.Use(handler.Authenticate(cfg))
